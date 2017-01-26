@@ -4,7 +4,7 @@ require "aws-sdk"
 
 module PgHeroLogs
   class << self
-    REGEX = /duration: (\d+\.\d+) ms  execute <unnamed>: (.+)?/i
+    REGEX = /duration: (\d+\.\d+) ms  statement: ([\s\S]+)?\Z/i
 
     def run(command)
       case command
