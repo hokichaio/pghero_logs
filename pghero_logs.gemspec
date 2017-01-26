@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "pg_query"
   spec.add_dependency "aws-sdk", "~> 1"
+  spec.add_dependency "slack-ruby-client", "~> 0.1.0"
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
