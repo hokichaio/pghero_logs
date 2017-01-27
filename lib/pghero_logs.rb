@@ -72,8 +72,8 @@ module PgHeroLogs
       queries = self.queries.sort_by{|q, i| -i[:total_time] }[0...20]
 
       messages = ""
-      messages << "Slowest Queries\n\n"
-      messages << "```"
+      messages << "Slowest Queries on #{ENV['AWS_DB_INSTANCE_IDENTIFIER']}\n\n"
+      messages << "```\n"
       messages << "Total    Avg  Count  Query\n"
       messages << "(min)   (ms)\n"
       queries.each do |query, info|
@@ -82,7 +82,7 @@ module PgHeroLogs
       messages << "```"
 
       messages << "\nFull Queries\n\n"
-      messages << "```"
+      messages << "```\n"
       queries.each_with_index do |(query, info), i|
         messages << "#{i + 1}. #{info[:sample]}\n"
       end
