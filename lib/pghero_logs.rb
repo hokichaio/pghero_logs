@@ -6,7 +6,7 @@ require "slack-ruby-client"
 module PgHeroLogs
 
   class << self
-    REGEX = /duration: (\d+\.\d+) ms  statement: ([\s\S]+)?\Z/i
+    REGEX = /duration: (\d+\.\d+) ms  statement: ([\s\S]+?;\n)/i
 
     def run(command)
       case command
@@ -77,16 +77,16 @@ module PgHeroLogs
       messages << "Total    Avg  Count  Query\n"
       messages << "(min)   (ms)\n"
       queries.each do |query, info|
-        messages << "%5d  %5d  %5d  %s\n" % [info[:total_time] / 60000, info[:total_time] / info[:count], info[:count], query[0...60]]
+        messages << "%5d  %5d  %5d  %s\n" % [info[:total_time] / 60000, info[:total_time] / info[:count], info[:count], squish(query)[0...60]]
       end
       messages << "```"
 
       messages << "\nFull Queries\n\n"
-      messages << "```\n"
       queries.each_with_index do |(query, info), i|
+      messages << "```\n"
         messages << "#{i + 1}. #{info[:sample]}\n"
-      end
       messages << "```"
+      end
       puts messages
       return messages
     end
@@ -94,7 +94,7 @@ module PgHeroLogs
     def parse_entry(active_entry)
       if (matches = active_entry.match(REGEX))
         begin
-          query = PgQuery.normalize(squish(matches[2].gsub(/\/\*.+/, ""))).gsub(/\?(, \?)+/, "?")
+          query = PgQuery.normalize(matches[2]).gsub(/\?(, \?)+/, "?")
           queries[query][:count] += 1
           queries[query][:total_time] += matches[1].to_f
           queries[query][:sample] = squish(matches[2])
